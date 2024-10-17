@@ -1,5 +1,5 @@
 import numpy as np
-from utils import Report
+from _utils import Report
 from pprint import pprint
 
 CLASS_MAP = {
