@@ -1,4 +1,5 @@
 import numpy as np
+import re
 import sklearn.metrics as skm
 
 
@@ -52,3 +53,53 @@ def binarize_confusion_matrix(cm, class_idx):
     return np.array([[TP, FN],
                      [FP, TN]])
     
+
+def flatten_dict(d, parent_key='', sep='.', exclude_regex=None):
+    items = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+
+        if exclude_regex is not None and re.search(exclude_regex, new_key):
+            continue
+
+        if isinstance(v, dict):
+            items.extend(flatten_dict(v, new_key, sep=sep, exclude_regex=exclude_regex).items())
+        else:
+            if isinstance(v, np.ndarray):
+                v = v.tolist()
+            items.append((new_key, v))
+    
+    return dict(items)
+
+
+def excluder(d, exclude_regex=None):
+    if exclude_regex is None:
+        return d
+
+    result = {}
+    for k, v in d.items():
+        if re.search(exclude_regex, k):
+            continue
+
+        if isinstance(v, dict):
+            result[k] = excluder(v, exclude_regex)
+        else:
+            if isinstance(v, np.ndarray):
+                v = v.tolist()
+            result[k] = v
+    return result
+
+
+def flatten(d, parent_key='', sep='.'):
+    items = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+
+        if isinstance(v, dict):
+            items.extend(flatten(v, new_key, sep=sep).items())
+        else:
+            if isinstance(v, np.ndarray):
+                v = v.tolist()
+            items.append((new_key, v))
+    
+    return dict(items)
