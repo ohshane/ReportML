@@ -24,6 +24,8 @@ if __name__ == "__main__":
                     class_map=CLASS_MAP,
                     y_true=y_true,
                     y_pred=y_pred,
-                    y_proba=y_proba)
+                    y_proba=y_proba,
+                    ci='clopperpearson')
     
-    report.to_json('report.json')
+    # report.to_json('report.json')
+    print(report)

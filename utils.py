@@ -52,27 +52,9 @@ def binarize_confusion_matrix(cm, class_idx):
 
     return np.array([[TP, FN],
                      [FP, TN]])
-    
-
-def flatten_dict(d, parent_key='', sep='.', exclude_regex=None):
-    items = []
-    for k, v in d.items():
-        new_key = f"{parent_key}{sep}{k}" if parent_key else k
-
-        if exclude_regex is not None and re.search(exclude_regex, new_key):
-            continue
-
-        if isinstance(v, dict):
-            items.extend(flatten_dict(v, new_key, sep=sep, exclude_regex=exclude_regex).items())
-        else:
-            if isinstance(v, np.ndarray):
-                v = v.tolist()
-            items.append((new_key, v))
-    
-    return dict(items)
 
 
-def excluder(d, exclude_regex=None):
+def excluder(d, exclude_regex=None, tolist=True):
     if exclude_regex is None:
         return d
 
@@ -84,13 +66,13 @@ def excluder(d, exclude_regex=None):
         if isinstance(v, dict):
             result[k] = excluder(v, exclude_regex)
         else:
-            if isinstance(v, np.ndarray):
+            if isinstance(v, np.ndarray) and tolist:
                 v = v.tolist()
             result[k] = v
     return result
 
 
-def flatten(d, parent_key='', sep='.'):
+def flatten(d, parent_key='', sep='.', tolist=True):
     items = []
     for k, v in d.items():
         new_key = f"{parent_key}{sep}{k}" if parent_key else k
@@ -98,7 +80,7 @@ def flatten(d, parent_key='', sep='.'):
         if isinstance(v, dict):
             items.extend(flatten(v, new_key, sep=sep).items())
         else:
-            if isinstance(v, np.ndarray):
+            if isinstance(v, np.ndarray) and tolist:
                 v = v.tolist()
             items.append((new_key, v))
     
